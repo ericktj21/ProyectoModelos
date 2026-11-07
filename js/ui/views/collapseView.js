@@ -45,7 +45,8 @@ export class CollapseView {
     const points = Array.from({ length: 20 }, (_, i) => ((i + 1) / 20) * v.mu * 0.99);
     const waits = points.map((lambda) => {
       const m = v.waitClass === 'normal' ? priorityWaits({ lambda, mu: v.mu, p: v.p }) : queueMetrics({ lambda, mu: v.mu, K: v.K });
-      return { x: lambda, y: minutes(v.waitClass === 'normal' ? m.WqNormal : m.Wq) };
+      const waitHours = v.waitClass === 'normal' ? m.WqNormal : m.Wq;
+      return { x: lambda, y: Number.isFinite(waitHours) ? waitHours * 60 : waitHours };
     });
     const risks = points.map((lambda) => ({ x: lambda, y: queueMetrics({ lambda, mu: v.mu, K: v.K }).pSaturation }));
     this.waitChart.update({ series: [{ name: 'Espera', color: '#f59e0b', data: waits }], vLines: [{ x: threshold.collapseLambda, label: 'Colapso', color: '#ef4444' }] });

@@ -117,10 +117,10 @@
       <div class="layout-sidebar">
         <form id="theory-form" class="card form" autocomplete="off">
           <h2>Parámetros</h2>
-          <label>Tasa de llegadas λ <span class="unit">(aviones/h)</span>
+          <label title="Cantidad promedio de aviones que llegan por hora">Tasa de llegadas λ <span class="unit">(aviones/h)</span>
             <input type="number" name="lambda" value="24" min="0.1" step="0.1" required />
           </label>
-          <label>Tasa de servicio μ <span class="unit">(aterrizajes/h)</span>
+          <label title="Cantidad promedio de aterrizajes que puede atender la pista por hora">Tasa de servicio μ <span class="unit">(aterrizajes/h)</span>
             <input type="number" name="mu" value="30" min="0.1" step="0.1" required />
           </label>
           <label>Fracción de emergencias p <span class="unit">(%)</span>
@@ -136,6 +136,7 @@
               <option value="deterministic">Determinista (M/D/1)</option>
             </select>
           </label>
+          <p class="hint">Exponencial: duración variable; Erlang-k: duración variable con k fases y menos variación; determinista: todos los aterrizajes duran exactamente lo mismo.</p>
           <label class="erlang-only" hidden>Fases k de Erlang
             <input type="number" name="erlangK" value="2" min="1" max="20" step="1" />
           </label>
@@ -178,8 +179,8 @@
         <form id="sim-form" class="card form" autocomplete="off">
           <h2>Configuración</h2>
           <div class="form-row">
-            <label>λ <span class="unit">(av/h)</span><input type="number" name="lambda" value="24" min="0.1" step="0.1" /></label>
-            <label>μ <span class="unit">(av/h)</span><input type="number" name="mu" value="30" min="0.1" step="0.1" /></label>
+            <label title="Cantidad promedio de aviones que llegan por hora">λ tasa de llegadas <span class="unit">(av/h)</span><input type="number" name="lambda" value="24" min="0.1" step="0.1" /></label>
+            <label title="Cantidad promedio de aterrizajes que puede atender la pista por hora">μ tasa de servicio <span class="unit">(av/h)</span><input type="number" name="mu" value="30" min="0.1" step="0.1" /></label>
           </div>
           <div class="form-row">
             <label>p <span class="unit">(%)</span><input type="number" name="p" value="10" min="0" max="100" step="1" data-scale="0.01" /></label>
@@ -198,6 +199,7 @@
               <option value="deterministic">Determinista</option>
             </select>
           </label>
+          <p class="hint">Exponencial = servicios con duración muy variable; Erlang-k = k fases que suavizan esa variación; determinista = duración fija.</p>
           <label class="erlang-only" hidden>Fases k<input type="number" name="erlangK" value="2" min="1" max="20" step="1" /></label>
           <div class="form-row">
             <label>Horizonte <span class="unit">(h)</span><input type="number" name="horizon" value="10000" min="10" step="100" /></label>
@@ -288,9 +290,9 @@
               </select>
             </label>
             <label>Velocidad <output id="rt-speed-out"></output>
-              <input type="range" name="speed" min="0.5" max="30" step="0.5" value="3" data-output="rt-speed-out" data-decimals="1" data-suffix=" min/s" />
+              <input type="range" name="speed" min="0.05" max="10" step="0.05" value="0.2" data-output="rt-speed-out" data-decimals="2" data-suffix=" min/s" />
             </label>
-            <p class="hint">Cambiar λ, μ, p, K o la disciplina reinicia la simulación. La velocidad se aplica de inmediato.</p>
+            <p class="hint">La velocidad indica minutos simulados por segundo real: 0,20 min/s hace que 2 minutos de aterrizaje tarden aproximadamente 10 segundos. Cambiar λ, μ, p, K o la disciplina reinicia la simulación.</p>
           </form>
 
           <article class="card">
@@ -310,8 +312,8 @@
       </header>
 
       <form id="exp-form" class="card form form--inline" autocomplete="off">
-        <label>μ <span class="unit">(av/h)</span><input type="number" name="mu" value="30" min="1" step="1" /></label>
-        <label>K<input type="number" name="K" value="10" min="1" step="1" /></label>
+        <label title="Cantidad promedio de aterrizajes que puede atender la pista por hora">μ tasa de servicio <span class="unit">(av/h)</span><input type="number" name="mu" value="30" min="1" step="1" /></label>
+        <label title="Umbral de seguridad: se marca saturación cuando hay K o más aviones">K capacidad segura <span class="unit">(aviones)</span><input type="number" name="K" value="10" min="1" step="1" /></label>
         <label>Réplicas<input type="number" name="replicas" value="8" min="2" max="30" step="1" /></label>
         <label>Horizonte <span class="unit">(h)</span><input type="number" name="horizon" value="10000" min="100" step="1000" /></label>
         <label>Calentamiento <span class="unit">(h)</span><input type="number" name="warmup" value="500" min="0" step="100" /></label>
@@ -323,6 +325,7 @@
             <option value="0.2">20 %</option>
           </select>
         </label>
+        <p class="hint form-hint">En estos experimentos λ no se escribe directamente: se calcula como λ = ρ × μ para probar las cargas ρ = 0,30–0,95.</p>
         <button type="button" class="btn btn--link" id="exp-doc-preset">Configuración del informe</button>
       </form>
 

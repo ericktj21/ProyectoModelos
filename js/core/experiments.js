@@ -69,6 +69,7 @@ export function theoryFor(config) {
     utilization: Math.min(base.rho, 1),
     WqEmergency: withPriority ? prio.WqEmergency : base.Wq,
     WqNormal: withPriority ? prio.WqNormal : base.Wq,
+    normalIncrease: withPriority ? prio.normalIncrease : 0,
   };
 }
 

@@ -72,6 +72,34 @@ También se pueden probar dos distribuciones alternativas del tiempo de pista:
 - `réplicas`: cantidad de simulaciones independientes.
 - `semilla`: número que permite repetir exactamente el mismo experimento.
 
+### Diccionario de símbolos y unidades
+
+| Símbolo | Nombre | Significado y unidad |
+|---|---|---|
+| `λ` | lambda | Tasa promedio de llegada: cuántos aviones llegan por hora (`aviones/h`). |
+| `μ` | mu | Tasa promedio de servicio: cuántos aterrizajes puede completar la pista por hora (`aterrizajes/h`). |
+| `ρ` | rho | Utilización de la pista: `ρ = λ/μ`. Por ejemplo, `ρ = 0,8` significa que la pista está ocupada aproximadamente el 80 % del tiempo. |
+| `p` | proporción de emergencias | Fracción de llegadas que son emergencias. `p = 10 %` significa 1 de cada 10 aviones, en promedio. |
+| `K` | capacidad segura | Umbral de seguridad en aviones. Si `N ≥ K`, se marca saturación; no es un límite físico de entrada. |
+| `N(t)` | aviones en el sistema | Número de aviones en la pista más el patrón de espera en el instante `t`. |
+| `Lq` | longitud media de cola | Número promedio de aviones esperando, sin contar el que está aterrizando. |
+| `L` | población media | Número promedio de aviones en todo el sistema. |
+| `Wq` | espera media | Tiempo promedio que un avión espera antes de comenzar a aterrizar. Se muestra en minutos. |
+| `W` | tiempo medio en el sistema | Espera más el tiempo que ocupa la pista. |
+| `P(N ≥ K)` | riesgo de saturación | Probabilidad o proporción de tiempo en que hay al menos `K` aviones. |
+| `k` | fases de Erlang | Número de fases exponenciales que se suman para representar un servicio. Mayor `k` produce tiempos más regulares. |
+| `horizonte` | duración | Horas simuladas que se ejecutan en cada réplica. |
+| `calentamiento` | descarte inicial | Horas iniciales que no se usan en las estadísticas para evitar el sesgo de comenzar con la pista vacía. |
+| `réplicas` | repeticiones | Corridas independientes del mismo escenario para calcular una media e intervalo de confianza. |
+
+#### ¿Qué significan las distribuciones?
+
+- **Exponencial (`M/M/1`)**: el tiempo entre llegadas y el tiempo de servicio son aleatorios. Es el caso base y puede producir aterrizajes muy cortos o largos, aunque su media sea `1/μ` horas.
+- **Erlang-k (`M/Ek/1`)**: cada aterrizaje se modela como la suma de `k` fases aleatorias. Conserva la media `1/μ`, pero reduce la variación; con `k = 2` es una opción intermedia.
+- **Determinista (`M/D/1`)**: todos los aterrizajes duran exactamente `1/μ` horas. Sirve para estudiar una pista con tiempos muy regulares.
+
+Estas opciones no cambian la media del servicio cuando se mantiene `μ`; cambian la variabilidad y, por tanto, la espera. La letra final `1` de `M/M/1` indica que existe una sola pista.
+
 La condición más importante es:
 
 ```text
@@ -87,9 +115,11 @@ puede estar técnicamente estable y aun así ser operacionalmente riesgosa.
 ### Entrada y servidor
 
 - `index.html`: contiene todas las pantallas, formularios, tablas y canvas.
-- `server.js`: sirve los archivos por HTTP y bloquea rutas que intenten salir
-  de la carpeta del proyecto.
-- `package.json`: define los comandos `npm start` y `npm test`.
+- `server.js`: es necesario para servir los archivos por HTTP y bloquear rutas
+  que intenten salir de la carpeta del proyecto. No se debe eliminar.
+- `package.json`: es necesario aunque no haya paquetes externos: declara que el
+  proyecto usa módulos ES y define los comandos `npm start` y `npm test`. No se
+  debe eliminar.
 - `assets/favicon.svg`: icono de la aplicación.
 
 ### Núcleo matemático
@@ -147,6 +177,11 @@ las fórmulas. La tabla muestra:
 - `W`: espera más el tiempo de aterrizaje.
 - `P(N >= K)`: riesgo de alcanzar el umbral de saturación.
 
+**Datos de prueba recomendados:** usa `λ = 24`, `μ = 30`, `p = 10 %`,
+`K = 10`, distribución **Exponencial**. El sistema queda con `ρ = 0,80`,
+por lo que debe aparecer estable. Para comparar distribuciones, conserva esos
+valores y prueba Erlang con `k = 2` y luego Determinista.
+
 La sección de prioridad muestra por qué las emergencias esperan menos y los
 vuelos normales esperan más. La espera global se conserva: la prioridad
 redistribuye el tiempo, pero no crea capacidad adicional.
@@ -173,6 +208,12 @@ El resultado combina las réplicas y muestra media e intervalo de confianza del
 95 %. La semilla fija hace que el resultado sea repetible: mismos parámetros y
 misma semilla producen los mismos valores.
 
+**Datos de prueba rápidos:** `λ = 24`, `μ = 30`, `p = 10 %`, `K = 10`,
+disciplina **Prioridad**, tiempo **Exponencial**, horizonte `2.000 h`,
+calentamiento `100 h`, `4 réplicas`, semilla `2024`. Para un resultado más
+estable usa `8 réplicas`, horizonte `10.000 h` y calentamiento `500 h`.
+Para comprobar inestabilidad prueba `λ = 32`, `μ = 30`.
+
 ### C. Tiempo real
 
 1. Entra en **Tiempo real**.
@@ -184,6 +225,15 @@ misma semilla producen los mismos valores.
 La animación utiliza la misma clase `LandingSimulator` que la simulación por
 lotes. Por eso la cola visual y las métricas siguen las mismas reglas
 matemáticas.
+
+La **Velocidad** está expresada en minutos simulados por segundo real. No es
+un porcentaje ni la tasa `μ`: `0,20 min/s` significa que un aterrizaje medio de
+2 minutos tarda unos 10 segundos en verse. Para una demostración lenta usa
+`0,10–0,20 min/s`; para una demostración rápida usa `1,00 min/s`.
+
+**Datos de prueba recomendados:** `λ = 24`, `μ = 30`, `p = 10 %`, `K = 10`,
+disciplina Prioridad y velocidad `0,20 min/s`. Pulsa **Reiniciar**, observa la
+cola y usa **Declarar emergencia** para insertar un avión prioritario.
 
 ### D. Experimentos del informe
 
@@ -201,6 +251,15 @@ El botón **Configuración del informe** coloca un horizonte largo y 8 réplicas
 Para una demostración rápida se puede usar un horizonte menor; para resultados
 del informe conviene usar el preset.
 
+En esta pantalla `λ` no aparece como campo porque se genera automáticamente
+para cada carga: `λ = ρ × μ`. Con `μ = 30`, por ejemplo, `ρ = 0,80` equivale
+a `λ = 24 aviones/h`. `μ` sigue siendo la capacidad de servicio de la pista.
+
+**Datos de prueba rápidos:** `μ = 30`, `K = 10`, `p = 10 %`, horizonte
+`2.000 h`, calentamiento `100 h`, `4 réplicas`, semilla `2024`. Ejecuta ambos
+experimentos y deben aparecer la Tabla 2, la Tabla 3 y sus dos gráficas.
+Para el informe final pulsa **Configuración del informe** y vuelve a ejecutar.
+
 ### E. Umbral de colapso
 
 1. Entra en **Umbral de colapso**.
@@ -215,6 +274,11 @@ La pantalla calcula:
 - la clasificación del escenario actual;
 - curvas de espera y saturación;
 - sensibilidad ante diferentes capacidades y velocidades de servicio.
+
+**Datos de prueba recomendados:** `μ = 30`, `K = 10`, alerta `5 %`,
+espera máxima `10 min`, espera global, `λ` evaluada `24 aviones/h` y
+`p = 10 %`. El caso debe quedar cerca de la zona de alerta; prueba luego
+`λ = 27 aviones/h` para observar una espera mayor.
 
 ## 5. Cómo explicar el proyecto
 

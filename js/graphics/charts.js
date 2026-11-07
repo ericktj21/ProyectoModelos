@@ -195,11 +195,13 @@ export class LineChart extends BaseChart {
       for (const p of s.data) {
         if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) continue;
         xs.push(p.x);
-        ys.push(p.y, p.low ?? p.y, p.high ?? p.y);
+        if (Number.isFinite(p.low)) ys.push(p.low);
+        if (Number.isFinite(p.high)) ys.push(p.high);
+        ys.push(p.y);
       }
     }
-    for (const h of o.hLines) ys.push(h.y);
-    for (const v of o.vLines) xs.push(v.x);
+    for (const h of o.hLines) if (Number.isFinite(h.y)) ys.push(h.y);
+    for (const v of o.vLines) if (Number.isFinite(v.x)) xs.push(v.x);
     let xMin = o.xMin ?? (xs.length ? Math.min(...xs) : 0);
     let xMax = o.xMax ?? (xs.length ? Math.max(...xs) : 1);
     let yMin = o.yMin ?? (ys.length ? Math.min(0, ...ys) : 0);

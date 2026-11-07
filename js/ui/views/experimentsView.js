@@ -10,6 +10,8 @@ import {
   buildPriorityPlan,
 } from '../../core/experiments.js';
 
+const toMinutes = (hours) => (Number.isFinite(hours) ? hours * 60 : hours);
+
 export class ExperimentsView {
   constructor(router, worker) {
     this.form = $('#exp-form');
@@ -100,10 +102,11 @@ export class ExperimentsView {
     renderTable($('#exp-fifo-table'), ['ρ', 'Wq teórico (min)', 'Wq simulado (min)', 'IC 95 %', 'Saturación'], rows);
     this.fifoChart.update({
       series: [
-        { name: 'Teoría M/M/1', color: '#38bdf8', dashed: true, data: results.map((r) => ({ x: r.config.lambda / r.config.mu, y: minutes(r.theory.Wq) })) },
-        { name: 'Simulación', color: '#818cf8', points: true, data: results.map((r) => ({ x: r.config.lambda / r.config.mu, y: minutes(r.summary.Wq.mean), low: minutes(r.summary.Wq.low), high: minutes(r.summary.Wq.high) })) },
+        { name: 'Teoría M/M/1', color: '#38bdf8', dashed: true, data: results.map((r) => ({ x: r.config.lambda / r.config.mu, y: toMinutes(r.theory.Wq) })) },
+        { name: 'Simulación', color: '#818cf8', points: true, data: results.map((r) => ({ x: r.config.lambda / r.config.mu, y: toMinutes(r.summary.Wq.mean), low: toMinutes(r.summary.Wq.low), high: toMinutes(r.summary.Wq.high) })) },
       ],
     });
+    requestAnimationFrame(() => this.fifoChart.draw());
   }
 
   renderPriority(results) {
@@ -121,15 +124,16 @@ export class ExperimentsView {
     }
     renderTable($('#exp-prio-table'), ['ρ', 'FIFO Wq (min)', 'Emergencias (min)', 'Normales (min)', 'Aumento teórico'], rows);
     const points = (key, color) => results.filter((_, i) => i % 2 === 1).map((r) => ({
-      x: r.config.lambda / r.config.mu, y: minutes(r.summary[key].mean), low: minutes(r.summary[key].low), high: minutes(r.summary[key].high),
+      x: r.config.lambda / r.config.mu, y: toMinutes(r.summary[key].mean), low: toMinutes(r.summary[key].low), high: toMinutes(r.summary[key].high),
     }));
     this.prioChart.update({
       series: [
-        { name: 'FIFO', color: '#94a3b8', dashed: true, data: results.filter((_, i) => i % 2 === 0).map((r) => ({ x: r.config.lambda / r.config.mu, y: minutes(r.summary.Wq.mean) })) },
+        { name: 'FIFO', color: '#94a3b8', dashed: true, data: results.filter((_, i) => i % 2 === 0).map((r) => ({ x: r.config.lambda / r.config.mu, y: toMinutes(r.summary.Wq.mean) })) },
         { name: 'Emergencias', color: '#22c55e', points: true, data: points('WqEmergency', '#22c55e') },
         { name: 'Normales', color: '#ef4444', points: true, data: points('WqNormal', '#ef4444') },
       ],
     });
+    requestAnimationFrame(() => this.prioChart.draw());
   }
 
   renderIncreaseTable() {
