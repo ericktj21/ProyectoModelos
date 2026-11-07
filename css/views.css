@@ -1,0 +1,157 @@
+/* ==========================================================================
+   views.css — Estilos específicos de cada sección de la aplicación
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- Inicio */
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 32px;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.lead { font-size: 1.05rem; color: var(--text-muted); }
+.hero__actions { display: flex; gap: 12px; flex-wrap: wrap; margin: 18px 0; }
+.authors { color: var(--text-muted); font-size: 0.9rem; }
+
+.hero__diagram {
+  background: linear-gradient(180deg, var(--surface), var(--bg-elevated));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.flow__node {
+  flex: 1;
+  min-width: 90px;
+  text-align: center;
+  padding: 14px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: #0c1526;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.flow__node small { color: var(--text-muted); font-weight: 400; }
+.flow__node--queue { border-color: rgba(129, 140, 248, 0.6); }
+.flow__node--server { border-color: rgba(56, 189, 248, 0.6); }
+.flow__arrow { color: var(--text-muted); font-size: 1.2rem; }
+
+.objectives { padding-left: 20px; margin: 0; }
+.objectives li { margin-bottom: 8px; }
+
+.feature {
+  color: var(--text);
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.feature:hover { transform: translateY(-3px); border-color: rgba(56, 189, 248, 0.5); text-decoration: none; }
+.feature p { color: var(--text-muted); margin: 0; font-size: 0.9rem; }
+.feature__icon { font-size: 1.6rem; display: block; margin-bottom: 8px; }
+
+/* ---------------------------------------------------------------- Tiempo real */
+
+.rt-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+.rt-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.rt-clock {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-clock strong { color: var(--text); font-family: var(--font-mono); }
+
+.airport-box {
+  position: relative;
+  width: 100%;
+  height: 470px;
+}
+
+.airport-box canvas { position: absolute; inset: 0; display: block; }
+
+.event-log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 220px;
+  overflow-y: auto;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+}
+
+.event-log li {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.event-log li time { color: #64748b; margin-right: 8px; }
+.event-log .log--emergency { color: #fca5a5; }
+.event-log .log--landing { color: #bae6fd; }
+.event-log .log--alert { color: #fde68a; }
+
+.live-table { width: 100%; font-size: 0.86rem; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.live-table th, .live-table td { padding: 6px 4px; border-bottom: 1px solid var(--border); text-align: right; }
+.live-table th:first-child, .live-table td:first-child { text-align: left; color: var(--text-muted); font-weight: 500; }
+.live-table thead th { color: var(--text-muted); font-size: 0.78rem; }
+
+/* ---------------------------------------------------------------- Colapso */
+
+.verdict {
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+}
+
+.verdict strong { display: block; font-size: 1.05rem; margin-bottom: 4px; }
+.verdict--ok { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.5); }
+.verdict--warn { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.5); }
+.verdict--danger { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.55); }
+
+/* ---------------------------------------------------------------- Responsive */
+
+@media (max-width: 1100px) {
+  .rt-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 960px) {
+  .hero { grid-template-columns: 1fr; }
+  .airport-box { height: 380px; }
+}

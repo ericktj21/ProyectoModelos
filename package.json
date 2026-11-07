@@ -1,0 +1,16 @@
+{
+  "name": "simulador-patron-espera-aterrizaje",
+  "version": "1.0.0",
+  "description": "Modelo matemático y simulador por eventos discretos (M/M/1 con prioridad) para la optimización del patrón de espera de aterrizaje aeroportuario.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/run-tests.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "author": "Erick T., Yeremy S.",
+  "license": "MIT"
+}

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Modelo matemático y simulador por eventos discretos para la optimización del patrón de espera de aterrizaje aeroportuario (M/M/1 con prioridad)." />
+  <title>Patrón de Espera de Aterrizaje · Modelos Matemáticos</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/views.css" />
+</head>
+<body>
+  <!-- ===================================================== ENCABEZADO -->
+  <header class="topbar">
+    <a class="brand" href="#inicio">
+      <img src="assets/favicon.svg" alt="" width="30" height="30" />
+      <span>
+        <strong>HoldingSim</strong>
+        <small>Patrón de espera · M/M/1</small>
+      </span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">☰</button>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#inicio" data-route="inicio">Inicio</a>
+      <a href="#teoria" data-route="teoria">Modelo teórico</a>
+      <a href="#simulacion" data-route="simulacion">Simulación</a>
+      <a href="#tiempo-real" data-route="tiempo-real">Tiempo real</a>
+      <a href="#experimentos" data-route="experimentos">Experimentos</a>
+      <a href="#colapso" data-route="colapso">Umbral de colapso</a>
+      <a href="#acerca" data-route="acerca">Referencias</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- ===================================================== INICIO -->
+    <section id="inicio" class="view">
+      <div class="hero">
+        <div class="hero__text">
+          <span class="eyebrow">Proyecto de Modelos Matemáticos</span>
+          <h1>Modelo matemático para la optimización del patrón de espera de aterrizaje aeroportuario</h1>
+          <p class="lead">
+            Simulador estocástico basado en teoría de colas (M/M/1) con cola FIFO y cola de prioridad
+            para evaluar la capacidad de una pista, los tiempos de espera en vuelo y el riesgo de
+            saturación ante emergencias.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#tiempo-real">▶ Ver simulación en vivo</a>
+            <a class="btn btn--ghost" href="#teoria">Explorar el modelo</a>
+          </div>
+          <p class="authors">Autores: Erick T. · Yeremy S.</p>
+        </div>
+        <div class="hero__diagram" aria-label="Diagrama del sistema">
+          <div class="flow">
+            <div class="flow__node">✈ Llegadas<br /><small>Poisson (λ)</small></div>
+            <div class="flow__arrow">→</div>
+            <div class="flow__node flow__node--queue">Patrón de espera<br /><small>FIFO / Prioridad</small></div>
+            <div class="flow__arrow">→</div>
+            <div class="flow__node flow__node--server">Pista<br /><small>Exponencial (μ)</small></div>
+            <div class="flow__arrow">→</div>
+            <div class="flow__node">Aterrizado</div>
+          </div>
+          <p class="hint">Una fracción <em>p</em> de las llegadas son emergencias y pasan al frente de la cola sin interrumpir el aterrizaje en curso.</p>
+        </div>
+      </div>
+
+      <div class="grid grid--2">
+        <article class="card">
+          <h2>Planteamiento del problema</h2>
+          <p>
+            En un aeropuerto con una sola pista, cuando llegan más aviones de los que la pista puede atender, los
+            excedentes entran en un <strong>patrón de espera</strong> en vuelo. Esa espera consume combustible,
+            encarece la operación y aumenta el riesgo de incidentes por saturación del sector.
+          </p>
+          <p>
+            El fenómeno es estocástico: ni las llegadas ni el tiempo de ocupación de la pista son deterministas.
+            Además, las aeronaves con combustible crítico o emergencia médica exigen <strong>prioridad</strong> de aterrizaje.
+          </p>
+          <blockquote>
+            <strong>Pregunta de investigación.</strong> ¿Cómo permiten la teoría de colas y la simulación con estructuras de
+            datos evaluar el comportamiento, los tiempos de espera y la probabilidad de saturación del patrón de
+            aterrizaje de un aeropuerto, cuando las llegadas son aleatorias y ocurren emergencias?
+          </blockquote>
+        </article>
+
+        <article class="card">
+          <h2>Objetivos</h2>
+          <p><strong>General.</strong> Desarrollar un modelo de simulación estocástica basado en la teoría de colas (M/M/1),
+            mediante estructuras de datos de cola (FIFO) y cola de prioridad, para evaluar la capacidad de operación, los
+            tiempos de espera en vuelo y el riesgo de saturación de una pista ante eventos de emergencia.</p>
+          <ol class="objectives">
+            <li><a href="#teoria">Formular el modelo matemático</a>: llegadas Poisson (λ), servicio Exponencial (μ) y métricas ρ, Lq y Wq.</li>
+            <li><a href="#simulacion">Implementar un simulador por eventos discretos</a> con cola FIFO y cola de prioridad, parametrizable y comparado con la teoría.</li>
+            <li><a href="#colapso">Evaluar escenarios críticos</a> variando el tráfico y las emergencias para identificar el umbral de colapso operativo.</li>
+          </ol>
+        </article>
+      </div>
+
+      <h2 class="section-title">¿Qué puede hacer en esta aplicación?</h2>
+      <div class="grid grid--3 feature-grid">
+        <a class="card feature" href="#teoria"><span class="feature__icon">∑</span><h3>Modelo teórico</h3><p>Calcule ρ, Pn, Lq, Wq, P(N ≥ K) y las esperas por clase de Cobham. Verifique la ley de conservación.</p></a>
+        <a class="card feature" href="#simulacion"><span class="feature__icon">⚙</span><h3>Simulación por lotes</h3><p>Ejecute réplicas independientes con semilla fija e intervalos de confianza del 95 % frente a la teoría.</p></a>
+        <a class="card feature" href="#tiempo-real"><span class="feature__icon">✈</span><h3>Tiempo real</h3><p>Observe la cola de aviones, la pista y las emergencias con métricas que se actualizan en vivo.</p></a>
+        <a class="card feature" href="#experimentos"><span class="feature__icon">📊</span><h3>Experimentos</h3><p>Reproduzca las Tablas 2, 3 y 4 y las Figuras 1 y 2 del informe.</p></a>
+        <a class="card feature" href="#colapso"><span class="feature__icon">⚠</span><h3>Umbral de colapso</h3><p>Encuentre la carga de alerta y de colapso y analice la sensibilidad ante μ y K.</p></a>
+        <a class="card feature" href="#acerca"><span class="feature__icon">📚</span><h3>Referencias</h3><p>Fundamentos: Erlang, Kendall, Little, Cobham, Law, Cormen y normativa OACI.</p></a>
+      </div>
+    </section>
+
+    <!-- ===================================================== MODELO TEÓRICO -->
+    <section id="teoria" class="view" hidden>
+      <header class="view__header">
+        <h1>Modelo teórico</h1>
+        <p>Solución analítica del sistema de una pista (Tabla 1 del informe). Los resultados se recalculan al cambiar cualquier parámetro.</p>
+      </header>
+
+      <div class="layout-sidebar">
+        <form id="theory-form" class="card form" autocomplete="off">
+          <h2>Parámetros</h2>
+          <label>Tasa de llegadas λ <span class="unit">(aviones/h)</span>
+            <input type="number" name="lambda" value="24" min="0.1" step="0.1" required />
+          </label>
+          <label>Tasa de servicio μ <span class="unit">(aterrizajes/h)</span>
+            <input type="number" name="mu" value="30" min="0.1" step="0.1" required />
+          </label>
+          <label>Fracción de emergencias p <span class="unit">(%)</span>
+            <input type="number" name="p" value="10" min="0" max="100" step="1" data-scale="0.01" />
+          </label>
+          <label>Capacidad segura K <span class="unit">(aviones)</span>
+            <input type="number" name="K" value="10" min="1" step="1" />
+          </label>
+          <label>Distribución del tiempo de pista
+            <select name="serviceType">
+              <option value="exponential">Exponencial (M/M/1)</option>
+              <option value="erlang">Erlang-k (M/Ek/1)</option>
+              <option value="deterministic">Determinista (M/D/1)</option>
+            </select>
+          </label>
+          <label class="erlang-only" hidden>Fases k de Erlang
+            <input type="number" name="erlangK" value="2" min="1" max="20" step="1" />
+          </label>
+          <p class="hint">Media del tiempo de pista: <strong id="th-service-mean">2,00 min</strong></p>
+        </form>
+
+        <div class="stack">
+          <div id="th-stability" class="banner"></div>
+          <div class="metrics" id="th-metrics"></div>
+
+          <article class="card">
+            <h2>Tabla 1. Magnitudes del modelo</h2>
+            <div id="th-table"></div>
+          </article>
+
+          <div class="grid grid--2">
+            <article class="card">
+              <h2>Distribución estacionaria P<sub>n</sub> = (1 − ρ)ρ<sup>n</sup></h2>
+              <div class="chart-box"><canvas id="th-pn-chart"></canvas></div>
+              <p class="hint" id="th-pn-note"></p>
+            </article>
+            <article class="card">
+              <h2>Prioridad sin expropiación (Cobham)</h2>
+              <div id="th-priority"></div>
+              <div id="th-conservation" class="banner banner--compact"></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== SIMULACIÓN POR LOTES -->
+    <section id="simulacion" class="view" hidden>
+      <header class="view__header">
+        <h1>Simulación por eventos discretos</h1>
+        <p>Ejecute réplicas independientes del simulador y compare automáticamente las métricas simuladas con las fórmulas teóricas.</p>
+      </header>
+
+      <div class="layout-sidebar">
+        <form id="sim-form" class="card form" autocomplete="off">
+          <h2>Configuración</h2>
+          <div class="form-row">
+            <label>λ <span class="unit">(av/h)</span><input type="number" name="lambda" value="24" min="0.1" step="0.1" /></label>
+            <label>μ <span class="unit">(av/h)</span><input type="number" name="mu" value="30" min="0.1" step="0.1" /></label>
+          </div>
+          <div class="form-row">
+            <label>p <span class="unit">(%)</span><input type="number" name="p" value="10" min="0" max="100" step="1" data-scale="0.01" /></label>
+            <label>K <span class="unit">(aviones)</span><input type="number" name="K" value="10" min="1" step="1" /></label>
+          </div>
+          <label>Disciplina de la cola
+            <select name="discipline">
+              <option value="priority">Cola de prioridad (montículo binario)</option>
+              <option value="fifo">FIFO (orden de llegada)</option>
+            </select>
+          </label>
+          <label>Tiempo de pista
+            <select name="serviceType">
+              <option value="exponential">Exponencial</option>
+              <option value="erlang">Erlang-k</option>
+              <option value="deterministic">Determinista</option>
+            </select>
+          </label>
+          <label class="erlang-only" hidden>Fases k<input type="number" name="erlangK" value="2" min="1" max="20" step="1" /></label>
+          <div class="form-row">
+            <label>Horizonte <span class="unit">(h)</span><input type="number" name="horizon" value="10000" min="10" step="100" /></label>
+            <label>Calentamiento <span class="unit">(h)</span><input type="number" name="warmup" value="500" min="0" step="50" /></label>
+          </div>
+          <div class="form-row">
+            <label>Réplicas<input type="number" name="replicas" value="8" min="2" max="50" step="1" /></label>
+            <label>Semilla<input type="number" name="seed" value="2024" min="0" step="1" /></label>
+          </div>
+          <div class="btn-group">
+            <button type="submit" class="btn btn--primary" id="sim-run">▶ Ejecutar</button>
+            <button type="button" class="btn btn--ghost" id="sim-cancel" disabled>Cancelar</button>
+          </div>
+          <button type="button" class="btn btn--link" id="sim-doc-preset">Usar configuración del informe (8 × 40.000 h)</button>
+          <div class="progress" id="sim-progress" hidden><div class="progress__bar"></div><span class="progress__label"></span></div>
+        </form>
+
+        <div class="stack">
+          <div id="sim-empty" class="card empty-state">
+            <span>⚙</span>
+            <p>Configure los parámetros y presione <strong>Ejecutar</strong>. La simulación corre en un hilo independiente (Web Worker), por lo que la página no se congela.</p>
+          </div>
+          <div id="sim-results" hidden>
+            <div class="metrics" id="sim-metrics"></div>
+            <article class="card">
+              <h2>Comparación automática: teoría vs. simulación</h2>
+              <div id="sim-table"></div>
+              <p class="hint">IC 95 %: intervalo de confianza basado en la t de Student con (réplicas − 1) grados de libertad. Los tiempos están en minutos.</p>
+            </article>
+            <article class="card">
+              <h2>Distribución del número de aviones en el sistema</h2>
+              <div class="chart-box"><canvas id="sim-dist-chart"></canvas></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== TIEMPO REAL -->
+    <section id="tiempo-real" class="view" hidden>
+      <header class="view__header">
+        <h1>Simulación en tiempo real</h1>
+        <p>Visualización animada del patrón de espera y de la pista. Cambie los parámetros y observe cómo responde el sistema.</p>
+      </header>
+
+      <div class="rt-layout">
+        <div class="stack">
+          <div class="card card--flush">
+            <div class="rt-toolbar">
+              <button class="btn btn--primary" id="rt-play">⏸ Pausar</button>
+              <button class="btn btn--ghost" id="rt-reset">↺ Reiniciar</button>
+              <button class="btn btn--danger" id="rt-emergency">⚠ Declarar emergencia</button>
+              <span class="rt-clock">Reloj: <strong id="rt-clock">00:00:00</strong></span>
+            </div>
+            <div class="airport-box"><canvas id="rt-canvas"></canvas></div>
+          </div>
+          <div class="grid grid--2">
+            <article class="card">
+              <h2>Aviones en el sistema N(t)</h2>
+              <div class="chart-box chart-box--small"><canvas id="rt-chart"></canvas></div>
+            </article>
+            <article class="card">
+              <h2>Bitácora de eventos</h2>
+              <ul class="event-log" id="rt-log"></ul>
+            </article>
+          </div>
+        </div>
+
+        <aside class="stack">
+          <form id="rt-form" class="card form" autocomplete="off">
+            <h2>Parámetros</h2>
+            <label>λ llegadas/h <output id="rt-lambda-out"></output>
+              <input type="range" name="lambda" min="1" max="40" step="1" value="24" data-output="rt-lambda-out" />
+            </label>
+            <label>μ aterrizajes/h <output id="rt-mu-out"></output>
+              <input type="range" name="mu" min="10" max="60" step="1" value="30" data-output="rt-mu-out" />
+            </label>
+            <label>p emergencias <output id="rt-p-out"></output>
+              <input type="range" name="p" min="0" max="50" step="1" value="10" data-scale="0.01" data-output="rt-p-out" data-suffix=" %" />
+            </label>
+            <label>K capacidad segura <output id="rt-k-out"></output>
+              <input type="range" name="K" min="3" max="20" step="1" value="10" data-output="rt-k-out" />
+            </label>
+            <label>Disciplina
+              <select name="discipline">
+                <option value="priority">Prioridad</option>
+                <option value="fifo">FIFO</option>
+              </select>
+            </label>
+            <label>Velocidad <output id="rt-speed-out"></output>
+              <input type="range" name="speed" min="0.5" max="30" step="0.5" value="3" data-output="rt-speed-out" data-decimals="1" data-suffix=" min/s" />
+            </label>
+            <p class="hint">Cambiar λ, μ, p, K o la disciplina reinicia la simulación. La velocidad se aplica de inmediato.</p>
+          </form>
+
+          <article class="card">
+            <h2>Métricas en vivo</h2>
+            <div id="rt-status" class="banner banner--compact"></div>
+            <div id="rt-metrics"></div>
+          </article>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===================================================== EXPERIMENTOS -->
+    <section id="experimentos" class="view" hidden>
+      <header class="view__header">
+        <h1>Experimentos del informe</h1>
+        <p>Reproduce la validación del simulador (Tabla 2, Figura 1), el efecto de las emergencias (Tabla 3, Figura 2) y el costo para los vuelos normales (Tabla 4).</p>
+      </header>
+
+      <form id="exp-form" class="card form form--inline" autocomplete="off">
+        <label>μ <span class="unit">(av/h)</span><input type="number" name="mu" value="30" min="1" step="1" /></label>
+        <label>K<input type="number" name="K" value="10" min="1" step="1" /></label>
+        <label>Réplicas<input type="number" name="replicas" value="8" min="2" max="30" step="1" /></label>
+        <label>Horizonte <span class="unit">(h)</span><input type="number" name="horizon" value="10000" min="100" step="1000" /></label>
+        <label>Calentamiento <span class="unit">(h)</span><input type="number" name="warmup" value="500" min="0" step="100" /></label>
+        <label>Semilla<input type="number" name="seed" value="2024" min="0" step="1" /></label>
+        <label>p (Tabla 3)
+          <select name="p">
+            <option value="0.05">5 %</option>
+            <option value="0.1" selected>10 %</option>
+            <option value="0.2">20 %</option>
+          </select>
+        </label>
+        <button type="button" class="btn btn--link" id="exp-doc-preset">Configuración del informe</button>
+      </form>
+
+      <div class="progress" id="exp-progress" hidden><div class="progress__bar"></div><span class="progress__label"></span></div>
+
+      <article class="card">
+        <div class="card__header">
+          <h2>Experimento 1 · Validación del modo FIFO</h2>
+          <div class="btn-group">
+            <button class="btn btn--primary" id="exp-fifo-run">▶ Ejecutar</button>
+            <button class="btn btn--ghost exp-cancel" disabled>Cancelar</button>
+          </div>
+        </div>
+        <div id="exp-fifo-table" class="placeholder">Presione “Ejecutar” para generar la Tabla 2.</div>
+        <h3>Figura 1. Espera promedio en función de la utilización: teoría M/M/1 y simulación</h3>
+        <div class="chart-box"><canvas id="exp-fifo-chart"></canvas></div>
+      </article>
+
+      <article class="card">
+        <div class="card__header">
+          <h2>Experimento 2 · Efecto de las emergencias</h2>
+          <div class="btn-group">
+            <button class="btn btn--primary" id="exp-prio-run">▶ Ejecutar</button>
+            <button class="btn btn--ghost exp-cancel" disabled>Cancelar</button>
+          </div>
+        </div>
+        <div id="exp-prio-table" class="placeholder">Presione “Ejecutar” para generar la Tabla 3.</div>
+        <h3>Figura 2. Espera de emergencias y de vuelos normales frente al esquema FIFO</h3>
+        <div class="chart-box"><canvas id="exp-prio-chart"></canvas></div>
+      </article>
+
+      <article class="card">
+        <h2>Tabla 4. Aumento de la espera de los vuelos normales respecto a FIFO (teórico)</h2>
+        <p>La espera de los vuelos normales se multiplica por 1 / (1 − pρ) respecto al esquema FIFO.</p>
+        <div id="exp-increase-table"></div>
+      </article>
+    </section>
+
+    <!-- ===================================================== UMBRAL DE COLAPSO -->
+    <section id="colapso" class="view" hidden>
+      <header class="view__header">
+        <h1>Umbral de colapso operativo</h1>
+        <p>Criterios de trabajo (modificables): <strong>alerta</strong> si P(N ≥ K) supera un umbral y <strong>colapso</strong> si la espera promedio supera un tiempo máximo.</p>
+      </header>
+
+      <div class="layout-sidebar">
+        <form id="collapse-form" class="card form" autocomplete="off">
+          <h2>Criterios</h2>
+          <div class="form-row">
+            <label>μ <span class="unit">(av/h)</span><input type="number" name="mu" value="30" min="1" step="1" /></label>
+            <label>K<input type="number" name="K" value="10" min="1" step="1" /></label>
+          </div>
+          <label>Alerta: P(N ≥ K) mayor que <span class="unit">(%)</span>
+            <input type="number" name="alertProbability" value="5" min="0.1" max="99" step="0.5" data-scale="0.01" />
+          </label>
+          <label>Colapso: espera mayor que <span class="unit">(min)</span>
+            <input type="number" name="maxWait" value="10" min="0.5" step="0.5" />
+          </label>
+          <label>Espera evaluada
+            <select name="waitClass">
+              <option value="global">Promedio global (FIFO)</option>
+              <option value="normal">Vuelos normales con prioridad</option>
+            </select>
+          </label>
+          <label>p emergencias <span class="unit">(%)</span>
+            <input type="number" name="p" value="10" min="0" max="100" step="1" data-scale="0.01" />
+          </label>
+          <hr />
+          <label>Evaluar un escenario: λ <span class="unit">(av/h)</span>
+            <input type="number" name="lambdaEval" value="24" min="0.1" step="0.5" />
+          </label>
+          <div id="collapse-verdict" class="verdict"></div>
+        </form>
+
+        <div class="stack">
+          <div class="metrics" id="collapse-metrics"></div>
+          <div class="grid grid--2">
+            <article class="card">
+              <h2>Espera promedio vs. tráfico</h2>
+              <div class="chart-box"><canvas id="collapse-wait-chart"></canvas></div>
+            </article>
+            <article class="card">
+              <h2>Riesgo de saturación vs. tráfico</h2>
+              <div class="chart-box"><canvas id="collapse-risk-chart"></canvas></div>
+            </article>
+          </div>
+          <article class="card">
+            <h2>Sensibilidad del umbral de alerta (λ en aviones/h) ante μ y K</h2>
+            <div id="collapse-sens-alert"></div>
+          </article>
+          <article class="card">
+            <h2>Sensibilidad del umbral de colapso (λ en aviones/h) ante μ y la variabilidad del servicio</h2>
+            <div id="collapse-sens-wait"></div>
+            <p class="hint">Las columnas M/E2/1 y M/D/1 usan la fórmula de Pollaczek–Khinchine: menos variabilidad en el tiempo de pista retrasa el colapso.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== REFERENCIAS -->
+    <section id="acerca" class="view" hidden>
+      <header class="view__header">
+        <h1>Fundamentos y referencias</h1>
+      </header>
+      <div class="grid grid--2">
+        <article class="card">
+          <h2>Supuestos del modelo</h2>
+          <ul class="list">
+            <li>Una pista (servidor único) y población de aeronaves infinita.</li>
+            <li>Llegadas según un proceso de Poisson de tasa λ (tiempos entre llegadas exponenciales de media 1/λ).</li>
+            <li>Tiempo de ocupación de pista exponencial de tasa μ (media 1/μ). Opcionalmente Erlang-k o determinista.</li>
+            <li>Capacidad del patrón de espera ilimitada; K es un umbral de seguridad, no un límite físico.</li>
+            <li>Fracción p de emergencias con prioridad sin expropiación: un aterrizaje en curso no se interrumpe.</li>
+            <li>Dentro de cada clase se respeta el orden de llegada.</li>
+            <li>El sistema es estable sólo si ρ = λ/μ &lt; 1.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h2>Referencias</h2>
+          <ul class="list references">
+            <li>Cobham, A. (1954). Priority assignment in waiting line problems. <em>Operations Research</em>, 2(1), 70–76.</li>
+            <li>Cormen, T. H., Leiserson, C. E., Rivest, R. L. y Stein, C. (2022). <em>Introduction to Algorithms</em> (4.ª ed.). MIT Press.</li>
+            <li>Erlang, A. K. (1909). The theory of probabilities and telephone conversations. <em>Nyt Tidsskrift for Matematik B</em>, 20, 33–39.</li>
+            <li>Gross, D. y Harris, C. M. (1998). <em>Fundamentals of Queueing Theory</em> (3.ª ed.). Wiley.</li>
+            <li>Hillier, F. S. y Lieberman, G. J. (2010). <em>Introducción a la investigación de operaciones</em> (9.ª ed.). McGraw-Hill.</li>
+            <li>Kendall, D. G. (1953). Stochastic processes occurring in the theory of queues… <em>The Annals of Mathematical Statistics</em>, 24(3), 338–354.</li>
+            <li>Law, A. M. (2015). <em>Simulation Modeling and Analysis</em> (5.ª ed.). McGraw-Hill.</li>
+            <li>Little, J. D. C. (1961). A proof for the queuing formula: L = λW. <em>Operations Research</em>, 9(3), 383–387.</li>
+            <li>Newell, G. F. (1979). Airport capacity and delays. <em>Transportation Science</em>, 13(3), 201–241.</li>
+            <li>OACI. Anexo 11: Servicios de tránsito aéreo; Doc. 4444: Gestión del tránsito aéreo.</li>
+            <li>Pyrgiotis, N., Malone, K. M. y Odoni, A. (2013). Modelling delay propagation within an airport network. <em>Transportation Research Part C</em>, 27, 60–75.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Proyecto de Modelos Matemáticos · Erick T. y Yeremy S. · Simulador M/M/1 con prioridad sin expropiación
+  </footer>
+
+  <!-- Punto de entrada: módulo ES que inicializa todas las vistas -->
+  <script type="module" src="js/main.js"></script>
+  <noscript>Esta aplicación requiere JavaScript habilitado.</noscript>
+</body>
+</html>
