@@ -69,6 +69,17 @@ export class RealtimeView {
     if (newSeed) this.seed++;
     this.params = { lambda: v.lambda, mu: v.mu, p: v.p, K: Math.round(v.K), discipline: v.discipline };
     this.speed = v.speed;
+    if (!(v.lambda > 0 && v.mu > 0 && v.K >= 1 && v.speed >= 0)) {
+      this.sim = null;
+      this.theory = null;
+      this.history = [{ x: 0, y: 0 }];
+      this.wasSaturated = false;
+      this.renderer.reset();
+      $('#rt-log').innerHTML = '';
+      this.log('Escribe valores mayores que 0 en λ, μ y K para iniciar la simulación.', 'alert');
+      this.refreshUi(true);
+      return;
+    }
     this.sim = new LandingSimulator(
       {
         lambda: v.lambda,
@@ -98,6 +109,7 @@ export class RealtimeView {
   }
 
   declareEmergency() {
+    if (!this.sim) return;
     const aircraft = this.sim.injectArrival(true);
     this.log(`AV-${pad(aircraft.id)} declara EMERGENCIA manualmente.`, 'emergency');
   }
@@ -108,19 +120,21 @@ export class RealtimeView {
     this.lastFrame = now;
 
     if (this.visible) {
-      if (this.running) {
+      if (this.sim && this.running) {
         const simDeltaHours = (dtReal * this.speed) / 60;
         this.sim.runUntil(this.sim.clock + simDeltaHours);
         this.sampleHistory();
       }
-      this.renderer.render({
-        clock: this.sim.clock,
-        holding: this.sim.getHoldingAircraft(),
-        runway: this.sim.runway,
-        capacityK: this.params.K,
-        numberInSystem: this.sim.numberInSystem,
-        paused: !this.running,
-      });
+      if (this.sim) {
+        this.renderer.render({
+          clock: this.sim.clock,
+          holding: this.sim.getHoldingAircraft(),
+          runway: this.sim.runway,
+          capacityK: this.params.K,
+          numberInSystem: this.sim.numberInSystem,
+          paused: !this.running,
+        });
+      }
       if (now - this.lastUiRefresh > UI_REFRESH_MS) {
         this.lastUiRefresh = now;
         this.refreshUi();
@@ -168,6 +182,13 @@ export class RealtimeView {
   // ------------------------------------------------------------- métricas
   refreshUi(force = false) {
     if (!this.visible && !force) return;
+    if (!this.sim || !this.theory) {
+      $('#rt-clock').textContent = '00:00:00';
+      $('#rt-status').className = 'banner banner--compact banner--warn';
+      $('#rt-status').textContent = 'Completa λ, μ y K con valores mayores que 0 para comenzar.';
+      $('#rt-metrics').innerHTML = '';
+      return;
+    }
     const r = this.sim.getResults();
     const t = this.theory;
     const n = this.sim.numberInSystem;

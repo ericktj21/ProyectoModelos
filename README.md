@@ -70,7 +70,11 @@ También se pueden probar dos distribuciones alternativas del tiempo de pista:
 - `calentamiento`: horas iniciales que se descartan para evitar el sesgo del
   sistema vacío.
 - `réplicas`: cantidad de simulaciones independientes.
-- `semilla`: número que permite repetir exactamente el mismo experimento.
+- `semilla`: número inicial del generador pseudoaleatorio. La misma semilla,
+  junto con los mismos parámetros, produce la misma secuencia de llegadas y
+  servicios; por eso permite repetir exactamente un experimento. No representa
+  una tasa, tiempo ni cantidad de aviones: cualquier entero, incluido `0`, es
+  válido.
 
 ### Diccionario de símbolos y unidades
 

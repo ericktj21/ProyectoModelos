@@ -71,6 +71,11 @@ export class SimulationView {
   async run() {
     if (!this.form.reportValidity()) return;
     const payload = this.buildConfig();
+    if (!(payload.config.lambda > 0 && payload.config.mu > 0 && payload.config.capacityK >= 1
+      && payload.config.horizon > payload.config.warmup && payload.replicas >= 2)) {
+      toast('Completa λ, μ, K, horizonte y al menos 2 réplicas con valores válidos.', 'error');
+      return;
+    }
     if (payload.config.lambda >= payload.config.mu) {
       toast('Atención: ρ ≥ 1, el sistema es inestable y la cola crecerá sin límite.', 'error');
     }

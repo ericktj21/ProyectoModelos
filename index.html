@@ -118,16 +118,16 @@
         <form id="theory-form" class="card form" autocomplete="off">
           <h2>Parámetros</h2>
           <label title="Cantidad promedio de aviones que llegan por hora">Tasa de llegadas λ <span class="unit">(aviones/h)</span>
-            <input type="number" name="lambda" value="24" min="0.1" step="0.1" required />
+            <input type="number" name="lambda" value="0" min="0" step="0.1" required />
           </label>
           <label title="Cantidad promedio de aterrizajes que puede atender la pista por hora">Tasa de servicio μ <span class="unit">(aterrizajes/h)</span>
-            <input type="number" name="mu" value="30" min="0.1" step="0.1" required />
+            <input type="number" name="mu" value="0" min="0" step="0.1" required />
           </label>
           <label>Fracción de emergencias p <span class="unit">(%)</span>
-            <input type="number" name="p" value="10" min="0" max="100" step="1" data-scale="0.01" />
+            <input type="number" name="p" value="0" min="0" max="100" step="1" data-scale="0.01" />
           </label>
           <label>Capacidad segura K <span class="unit">(aviones)</span>
-            <input type="number" name="K" value="10" min="1" step="1" />
+            <input type="number" name="K" value="0" min="0" step="1" />
           </label>
           <label>Distribución del tiempo de pista
             <select name="serviceType">
@@ -138,7 +138,7 @@
           </label>
           <p class="hint">Exponencial: duración variable; Erlang-k: duración variable con k fases y menos variación; determinista: todos los aterrizajes duran exactamente lo mismo.</p>
           <label class="erlang-only" hidden>Fases k de Erlang
-            <input type="number" name="erlangK" value="2" min="1" max="20" step="1" />
+            <input type="number" name="erlangK" value="0" min="0" max="20" step="1" />
           </label>
           <p class="hint">Media del tiempo de pista: <strong id="th-service-mean">2,00 min</strong></p>
         </form>
@@ -179,12 +179,12 @@
         <form id="sim-form" class="card form" autocomplete="off">
           <h2>Configuración</h2>
           <div class="form-row">
-            <label title="Cantidad promedio de aviones que llegan por hora">λ tasa de llegadas <span class="unit">(av/h)</span><input type="number" name="lambda" value="24" min="0.1" step="0.1" /></label>
-            <label title="Cantidad promedio de aterrizajes que puede atender la pista por hora">μ tasa de servicio <span class="unit">(av/h)</span><input type="number" name="mu" value="30" min="0.1" step="0.1" /></label>
+            <label title="Cantidad promedio de aviones que llegan por hora">λ tasa de llegadas <span class="unit">(av/h)</span><input type="number" name="lambda" value="0" min="0" step="0.1" /></label>
+            <label title="Cantidad promedio de aterrizajes que puede atender la pista por hora">μ tasa de servicio <span class="unit">(av/h)</span><input type="number" name="mu" value="0" min="0" step="0.1" /></label>
           </div>
           <div class="form-row">
-            <label>p <span class="unit">(%)</span><input type="number" name="p" value="10" min="0" max="100" step="1" data-scale="0.01" /></label>
-            <label>K <span class="unit">(aviones)</span><input type="number" name="K" value="10" min="1" step="1" /></label>
+            <label>p <span class="unit">(%)</span><input type="number" name="p" value="0" min="0" max="100" step="1" data-scale="0.01" /></label>
+            <label>K <span class="unit">(aviones)</span><input type="number" name="K" value="0" min="0" step="1" /></label>
           </div>
           <label>Disciplina de la cola
             <select name="discipline">
@@ -200,14 +200,14 @@
             </select>
           </label>
           <p class="hint">Exponencial = servicios con duración muy variable; Erlang-k = k fases que suavizan esa variación; determinista = duración fija.</p>
-          <label class="erlang-only" hidden>Fases k<input type="number" name="erlangK" value="2" min="1" max="20" step="1" /></label>
+          <label class="erlang-only" hidden>Fases k<input type="number" name="erlangK" value="0" min="0" max="20" step="1" /></label>
           <div class="form-row">
-            <label>Horizonte <span class="unit">(h)</span><input type="number" name="horizon" value="10000" min="10" step="100" /></label>
-            <label>Calentamiento <span class="unit">(h)</span><input type="number" name="warmup" value="500" min="0" step="50" /></label>
+            <label>Horizonte <span class="unit">(h)</span><input type="number" name="horizon" value="0" min="0" step="100" /></label>
+            <label>Calentamiento <span class="unit">(h)</span><input type="number" name="warmup" value="0" min="0" step="50" /></label>
           </div>
           <div class="form-row">
-            <label>Réplicas<input type="number" name="replicas" value="8" min="2" max="50" step="1" /></label>
-            <label>Semilla<input type="number" name="seed" value="2024" min="0" step="1" /></label>
+            <label>Réplicas<input type="number" name="replicas" value="0" min="0" max="50" step="1" /></label>
+            <label>Semilla<input type="number" name="seed" value="0" min="0" step="1" /></label>
           </div>
           <div class="btn-group">
             <button type="submit" class="btn btn--primary" id="sim-run">▶ Ejecutar</button>
@@ -272,16 +272,16 @@
           <form id="rt-form" class="card form" autocomplete="off">
             <h2>Parámetros</h2>
             <label>λ llegadas/h <output id="rt-lambda-out"></output>
-              <input type="range" name="lambda" min="1" max="40" step="1" value="24" data-output="rt-lambda-out" />
+              <input type="range" name="lambda" min="0" max="40" step="1" value="0" data-output="rt-lambda-out" />
             </label>
             <label>μ aterrizajes/h <output id="rt-mu-out"></output>
-              <input type="range" name="mu" min="10" max="60" step="1" value="30" data-output="rt-mu-out" />
+              <input type="range" name="mu" min="0" max="60" step="1" value="0" data-output="rt-mu-out" />
             </label>
             <label>p emergencias <output id="rt-p-out"></output>
-              <input type="range" name="p" min="0" max="50" step="1" value="10" data-scale="0.01" data-output="rt-p-out" data-suffix=" %" />
+              <input type="range" name="p" min="0" max="50" step="1" value="0" data-scale="0.01" data-output="rt-p-out" data-suffix=" %" />
             </label>
             <label>K capacidad segura <output id="rt-k-out"></output>
-              <input type="range" name="K" min="3" max="20" step="1" value="10" data-output="rt-k-out" />
+              <input type="range" name="K" min="0" max="20" step="1" value="0" data-output="rt-k-out" />
             </label>
             <label>Disciplina
               <select name="discipline">
@@ -290,7 +290,7 @@
               </select>
             </label>
             <label>Velocidad <output id="rt-speed-out"></output>
-              <input type="range" name="speed" min="0.05" max="10" step="0.05" value="0.2" data-output="rt-speed-out" data-decimals="2" data-suffix=" min/s" />
+              <input type="range" name="speed" min="0" max="10" step="0.05" value="0" data-output="rt-speed-out" data-decimals="2" data-suffix=" min/s" />
             </label>
             <p class="hint">La velocidad indica minutos simulados por segundo real: 0,20 min/s hace que 2 minutos de aterrizaje tarden aproximadamente 10 segundos. Cambiar λ, μ, p, K o la disciplina reinicia la simulación.</p>
           </form>
@@ -312,16 +312,17 @@
       </header>
 
       <form id="exp-form" class="card form form--inline" autocomplete="off">
-        <label title="Cantidad promedio de aterrizajes que puede atender la pista por hora">μ tasa de servicio <span class="unit">(av/h)</span><input type="number" name="mu" value="30" min="1" step="1" /></label>
-        <label title="Umbral de seguridad: se marca saturación cuando hay K o más aviones">K capacidad segura <span class="unit">(aviones)</span><input type="number" name="K" value="10" min="1" step="1" /></label>
-        <label>Réplicas<input type="number" name="replicas" value="8" min="2" max="30" step="1" /></label>
-        <label>Horizonte <span class="unit">(h)</span><input type="number" name="horizon" value="10000" min="100" step="1000" /></label>
-        <label>Calentamiento <span class="unit">(h)</span><input type="number" name="warmup" value="500" min="0" step="100" /></label>
-        <label>Semilla<input type="number" name="seed" value="2024" min="0" step="1" /></label>
+        <label title="Cantidad promedio de aterrizajes que puede atender la pista por hora">μ tasa de servicio <span class="unit">(av/h)</span><input type="number" name="mu" value="0" min="0" step="1" /></label>
+        <label title="Umbral de seguridad: se marca saturación cuando hay K o más aviones">K capacidad segura <span class="unit">(aviones)</span><input type="number" name="K" value="0" min="0" step="1" /></label>
+        <label>Réplicas<input type="number" name="replicas" value="0" min="0" max="30" step="1" /></label>
+        <label>Horizonte <span class="unit">(h)</span><input type="number" name="horizon" value="0" min="0" step="1000" /></label>
+        <label>Calentamiento <span class="unit">(h)</span><input type="number" name="warmup" value="0" min="0" step="100" /></label>
+        <label>Semilla<input type="number" name="seed" value="0" min="0" step="1" /></label>
         <label>p (Tabla 3)
           <select name="p">
+            <option value="0" selected>0 %</option>
             <option value="0.05">5 %</option>
-            <option value="0.1" selected>10 %</option>
+            <option value="0.1">10 %</option>
             <option value="0.2">20 %</option>
           </select>
         </label>
@@ -375,14 +376,14 @@
         <form id="collapse-form" class="card form" autocomplete="off">
           <h2>Criterios</h2>
           <div class="form-row">
-            <label>μ <span class="unit">(av/h)</span><input type="number" name="mu" value="30" min="1" step="1" /></label>
-            <label>K<input type="number" name="K" value="10" min="1" step="1" /></label>
+            <label>μ <span class="unit">(av/h)</span><input type="number" name="mu" value="0" min="0" step="1" /></label>
+            <label>K<input type="number" name="K" value="0" min="0" step="1" /></label>
           </div>
           <label>Alerta: P(N ≥ K) mayor que <span class="unit">(%)</span>
-            <input type="number" name="alertProbability" value="5" min="0.1" max="99" step="0.5" data-scale="0.01" />
+            <input type="number" name="alertProbability" value="0" min="0" max="99" step="0.5" data-scale="0.01" />
           </label>
           <label>Colapso: espera mayor que <span class="unit">(min)</span>
-            <input type="number" name="maxWait" value="10" min="0.5" step="0.5" />
+            <input type="number" name="maxWait" value="0" min="0" step="0.5" />
           </label>
           <label>Espera evaluada
             <select name="waitClass">
@@ -391,11 +392,11 @@
             </select>
           </label>
           <label>p emergencias <span class="unit">(%)</span>
-            <input type="number" name="p" value="10" min="0" max="100" step="1" data-scale="0.01" />
+            <input type="number" name="p" value="0" min="0" max="100" step="1" data-scale="0.01" />
           </label>
           <hr />
           <label>Evaluar un escenario: λ <span class="unit">(av/h)</span>
-            <input type="number" name="lambdaEval" value="24" min="0.1" step="0.5" />
+            <input type="number" name="lambdaEval" value="0" min="0" step="0.5" />
           </label>
           <div id="collapse-verdict" class="verdict"></div>
         </form>
