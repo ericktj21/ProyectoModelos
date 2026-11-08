@@ -64,38 +64,6 @@
         </div>
       </div>
 
-      <div class="grid grid--2">
-        <article class="card">
-          <h2>Planteamiento del problema</h2>
-          <p>
-            En un aeropuerto con una sola pista, cuando llegan más aviones de los que la pista puede atender, los
-            excedentes entran en un <strong>patrón de espera</strong> en vuelo. Esa espera consume combustible,
-            encarece la operación y aumenta el riesgo de incidentes por saturación del sector.
-          </p>
-          <p>
-            El fenómeno es estocástico: ni las llegadas ni el tiempo de ocupación de la pista son deterministas.
-            Además, las aeronaves con combustible crítico o emergencia médica exigen <strong>prioridad</strong> de aterrizaje.
-          </p>
-          <blockquote>
-            <strong>Pregunta de investigación.</strong> ¿Cómo permiten la teoría de colas y la simulación con estructuras de
-            datos evaluar el comportamiento, los tiempos de espera y la probabilidad de saturación del patrón de
-            aterrizaje de un aeropuerto, cuando las llegadas son aleatorias y ocurren emergencias?
-          </blockquote>
-        </article>
-
-        <article class="card">
-          <h2>Objetivos</h2>
-          <p><strong>General.</strong> Desarrollar un modelo de simulación estocástica basado en la teoría de colas (M/M/1),
-            mediante estructuras de datos de cola (FIFO) y cola de prioridad, para evaluar la capacidad de operación, los
-            tiempos de espera en vuelo y el riesgo de saturación de una pista ante eventos de emergencia.</p>
-          <ol class="objectives">
-            <li><a href="#teoria">Formular el modelo matemático</a>: llegadas Poisson (λ), servicio Exponencial (μ) y métricas ρ, Lq y Wq.</li>
-            <li><a href="#simulacion">Implementar un simulador por eventos discretos</a> con cola FIFO y cola de prioridad, parametrizable y comparado con la teoría.</li>
-            <li><a href="#colapso">Evaluar escenarios críticos</a> variando el tráfico y las emergencias para identificar el umbral de colapso operativo.</li>
-          </ol>
-        </article>
-      </div>
-
       <h2 class="section-title">¿Qué puede hacer en esta aplicación?</h2>
       <div class="grid grid--3 feature-grid">
         <a class="card feature" href="#teoria"><span class="feature__icon">∑</span><h3>Modelo teórico</h3><p>Calcule ρ, Pn, Lq, Wq, P(N ≥ K) y las esperas por clase de Cobham. Verifique la ley de conservación.</p></a>
@@ -377,7 +345,7 @@
           <h2>Criterios</h2>
           <div class="form-row">
             <label>μ <span class="unit">(av/h)</span><input type="number" name="mu" value="0" min="0" step="1" /></label>
-            <label>K<input type="number" name="K" value="0" min="0" step="1" /></label>
+            <label>K <span class="unit">(aviones)</span><input type="number" name="K" value="0" min="0" step="1" /></label>
           </div>
           <label>Alerta: P(N ≥ K) mayor que <span class="unit">(%)</span>
             <input type="number" name="alertProbability" value="0" min="0" max="99" step="0.5" data-scale="0.01" />
