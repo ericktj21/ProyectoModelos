@@ -5,9 +5,9 @@ de forma aleatoria, esperan si la pista está ocupada y aterrizan cuando el
 servidor queda libre. El modelo permite comparar una cola normal (**FIFO**) con
 una cola de prioridad para aeronaves en emergencia.
 
-La aplicación no es únicamente una gráfica: calcula las fórmulas del modelo,
-ejecuta una simulación estocástica por eventos, compara ambos resultados y
-permite observar el sistema mientras avanza.
+La aplicación calcula las fórmulas del modelo, ejecuta experimentos
+reproducibles y permite observar el sistema mientras avanza. Las secciones
+disponibles son **Modelo teórico**, **Tiempo real** y **Experimentos**.
 
 ## 1. Instalación y ejecución
 
@@ -148,11 +148,8 @@ puede estar técnicamente estable y aun así ser operacionalmente riesgosa.
 - `js/ui/widgets.js`: tarjetas, barra de progreso y controles compartidos.
 - `js/ui/workerClient.js`: comunica la interfaz con el Web Worker.
 - `js/ui/views/theoryView.js`: pantalla del modelo teórico.
-- `js/ui/views/simulationView.js`: simulación por lotes y comparación teoría vs.
-  simulación.
 - `js/ui/views/realtimeView.js`: animación paso a paso.
 - `js/ui/views/experimentsView.js`: Tablas 2, 3 y 4 del informe.
-- `js/ui/views/collapseView.js`: umbrales, gráficas y sensibilidad.
 
 ### Gráficas y procesamiento paralelo
 
@@ -190,35 +187,7 @@ La sección de prioridad muestra por qué las emergencias esperan menos y los
 vuelos normales esperan más. La espera global se conserva: la prioridad
 redistribuye el tiempo, pero no crea capacidad adicional.
 
-### B. Simulación por eventos discretos
-
-1. Entra en **Simulación**.
-2. Elige la disciplina FIFO o prioridad.
-3. Configura el horizonte y el calentamiento.
-4. Usa al menos 4 u 8 réplicas para obtener un intervalo más confiable.
-5. Presiona **Ejecutar**.
-6. Espera a que termine la barra de progreso.
-
-Cada réplica:
-
-1. Genera el siguiente tiempo de llegada.
-2. Inserta una llegada en la agenda de eventos.
-3. Atiende la llegada si la pista está libre o la agrega a la cola.
-4. Programa el fin del aterrizaje.
-5. Selecciona el siguiente avión según FIFO o prioridad.
-6. Actualiza tiempos, ocupación, cola y saturación.
-
-El resultado combina las réplicas y muestra media e intervalo de confianza del
-95 %. La semilla fija hace que el resultado sea repetible: mismos parámetros y
-misma semilla producen los mismos valores.
-
-**Datos de prueba rápidos:** `λ = 24`, `μ = 30`, `p = 10 %`, `K = 10`,
-disciplina **Prioridad**, tiempo **Exponencial**, horizonte `2.000 h`,
-calentamiento `100 h`, `4 réplicas`, semilla `2024`. Para un resultado más
-estable usa `8 réplicas`, horizonte `10.000 h` y calentamiento `500 h`.
-Para comprobar inestabilidad prueba `λ = 32`, `μ = 30`.
-
-### C. Tiempo real
+### B. Tiempo real
 
 1. Entra en **Tiempo real**.
 2. Ajusta los parámetros del panel derecho.
@@ -226,9 +195,8 @@ Para comprobar inestabilidad prueba `λ = 32`, `μ = 30`.
 4. Usa **Reiniciar** para empezar otra corrida.
 5. Usa **Declarar emergencia** para insertar manualmente un avión prioritario.
 
-La animación utiliza la misma clase `LandingSimulator` que la simulación por
-lotes. Por eso la cola visual y las métricas siguen las mismas reglas
-matemáticas.
+La animación utiliza la clase `LandingSimulator`, por lo que la cola visual y
+las métricas siguen las mismas reglas matemáticas que los experimentos.
 
 La **Velocidad** está expresada en minutos simulados por segundo real. No es
 un porcentaje ni la tasa `μ`: `0,20 min/s` significa que un aterrizaje medio de
@@ -239,7 +207,13 @@ un porcentaje ni la tasa `μ`: `0,20 min/s` significa que un aterrizaje medio de
 disciplina Prioridad y velocidad `0,20 min/s`. Pulsa **Reiniciar**, observa la
 cola y usa **Declarar emergencia** para insertar un avión prioritario.
 
-### D. Experimentos del informe
+Para mostrar que el sistema se satura, prueba `λ = 29`, `μ = 30`, `p = 20 %`,
+`K = 5` y velocidad `0,50 min/s`. Para llevarlo al límite usa `λ = 35`,
+`μ = 30`: como `ρ > 1`, la cola crecerá continuamente. Si la animación parece
+vacía, aumenta la velocidad o pulsa **Reiniciar** después de cambiar los
+parámetros.
+
+### C. Experimentos del informe
 
 En **Experimentos**:
 
@@ -252,8 +226,8 @@ En **Experimentos**:
 ```
 
 El botón **Configuración del informe** coloca un horizonte largo y 8 réplicas.
-Para una demostración rápida se puede usar un horizonte menor; para resultados
-del informe conviene usar el preset.
+Para una demostración rápida usa un horizonte menor; para resultados del informe
+conviene usar el preset. Se requieren al menos 2 réplicas.
 
 En esta pantalla `λ` no aparece como campo porque se genera automáticamente
 para cada carga: `λ = ρ × μ`. Con `μ = 30`, por ejemplo, `ρ = 0,80` equivale
@@ -261,28 +235,50 @@ a `λ = 24 aviones/h`. `μ` sigue siendo la capacidad de servicio de la pista.
 
 **Datos de prueba rápidos:** `μ = 30`, `K = 10`, `p = 10 %`, horizonte
 `2.000 h`, calentamiento `100 h`, `4 réplicas`, semilla `2024`. Ejecuta ambos
-experimentos y deben aparecer la Tabla 2, la Tabla 3 y sus dos gráficas.
-Para el informe final pulsa **Configuración del informe** y vuelve a ejecutar.
+experimentos para generar las tablas y gráficas.
 
-### E. Umbral de colapso
+Para un resultado más estable usa `μ = 30`, `K = 10`, horizonte `40.000 h`,
+calentamiento `1.000 h`, `8 réplicas` y semilla `2024`. Es la configuración del
+botón **Configuración del informe**.
 
-1. Entra en **Umbral de colapso**.
-2. Define `μ`, `K`, el porcentaje de alerta y la espera máxima aceptable.
-3. Selecciona espera global o espera de vuelos normales.
-4. Escribe un `λ` para evaluar un escenario.
+#### Por qué la línea verde de emergencias queda baja
 
-La pantalla calcula:
+La línea verde es la espera de **emergencias**, no la espera total. La
+disciplina de prioridad las coloca delante de los vuelos normales que todavía
+no comenzaron a aterrizar. No interrumpe el aterrizaje que ya está en curso,
+por eso se llama prioridad **sin expropiación**.
 
-- el `λ` donde el riesgo supera el porcentaje de alerta;
-- el `λ` donde la espera supera el máximo permitido;
-- la clasificación del escenario actual;
-- curvas de espera y saturación;
-- sensibilidad ante diferentes capacidades y velocidades de servicio.
+La espera que se ahorran las emergencias la absorben los vuelos normales, que
+aparecen en rojo. La espera global no desaparece: solo se redistribuye.
+Además, en el experimento se comparan las emergencias con una cola FIFO
+completa, por lo que es normal que la verde quede por debajo de la línea gris.
 
-**Datos de prueba recomendados:** `μ = 30`, `K = 10`, alerta `5 %`,
-espera máxima `10 min`, espera global, `λ` evaluada `24 aviones/h` y
-`p = 10 %`. El caso debe quedar cerca de la zona de alerta; prueba luego
-`λ = 27 aviones/h` para observar una espera mayor.
+Con `μ = 30` y `p = 10 %`, los valores teóricos aproximados son:
+
+| ρ | FIFO gris | Emergencias verdes | Normales rojos |
+|---:|---:|---:|---:|
+| 0,50 | 2,0 min | 2,1 min | 4,2 min |
+| 0,80 | 8,0 min | 3,5 min | 17,4 min |
+| 0,90 | 18,0 min | 4,0 min | 40,0 min |
+| 0,95 | 38,0 min | 4,2 min | 84,2 min |
+
+Para que la diferencia se vea claramente usa `μ = 30`, `p = 20 %`,
+`K = 10`, horizonte `40.000 h`, calentamiento `1.000 h`, `8 réplicas` y
+semilla `2024`. En `ρ = 0,95`, la emergencia sigue cerca de 4,7 minutos,
+mientras el vuelo normal puede superar 90 minutos. Si `p = 0 %`, la línea
+verde no representa una clase con llegadas y la comparación pierde sentido.
+
+#### Escenarios para demostrar la funcionalidad
+
+| Objetivo | μ | p | Cargas observadas | Horizonte | Calentamiento | Réplicas | Semilla |
+|---|---:|---:|---|---:|---:|---:|---:|
+| Operación estable | 30 | 5 % | ρ = 0,50–0,80 | 2.000 h | 100 h | 4 | 2024 |
+| Prioridad visible | 30 | 20 % | ρ = 0,80–0,95 | 40.000 h | 1.000 h | 8 | 2024 |
+| Alta congestión | 30 | 20 % | ρ = 0,90–0,95 | 40.000 h | 1.000 h | 8 | 2024 |
+
+En los dos últimos casos la diferencia se observa sobre todo en `ρ = 0,90`
+y `ρ = 0,95`. La carga `ρ` no se escribe en el formulario: el programa la
+genera internamente como `λ = ρ × μ`.
 
 ## 5. Cómo explicar el proyecto
 
@@ -290,11 +286,9 @@ Una explicación breve y correcta es:
 
 > El proyecto modela una pista como un sistema de colas `M/M/1`. Las llegadas
 > son aleatorias, la pista atiende un avión a la vez y las emergencias tienen
-> prioridad sin interrumpir un aterrizaje que ya comenzó. Primero se calculan
-> resultados teóricos y después se ejecutan réplicas mediante simulación por
-> eventos discretos. Finalmente se comparan las medias simuladas con la teoría
-> y se identifica cuándo la utilización o la espera vuelven inseguro el
-> sistema.
+> prioridad sin interrumpir un aterrizaje que ya comenzó. El modelo teórico
+> calcula las métricas, Tiempo real muestra la dinámica y Experimentos ejecuta
+> réplicas para comparar FIFO, emergencias y vuelos normales.
 
 Si preguntan por qué se usan réplicas, la respuesta es que una simulación
 aleatoria individual puede desviarse del valor esperado. Varias réplicas

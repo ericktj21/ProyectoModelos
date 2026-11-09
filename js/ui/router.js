@@ -1,7 +1,7 @@
 /**
  * router.js
  * ---------------------------------------------------------------------------
- * Navegación entre secciones con el hash de la URL (#teoria, #simulacion…).
+ * Navegación entre secciones con el hash de la URL (#teoria, #tiempo-real…).
  * Permite usar los botones atrás/adelante del navegador y compartir enlaces
  * a una sección concreta. Notifica a las vistas cuando se muestran para que
  * puedan redibujar sus gráficas con el tamaño correcto.
